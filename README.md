@@ -17,7 +17,7 @@ It then displays the information onto the menubar, and you can customize what in
 # 
 <img width="368" alt="image" src="https://github.com/user-attachments/assets/0194304a-098b-42e8-8fb8-edfe519e85d2" />
 
-> You can decide what to view in Watter based your preference. 
+> You can decide what to view in Watter based on your preference. 
 
 #
 
