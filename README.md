@@ -36,11 +36,10 @@ I'm open to any suggestions on improving the app's codebase and making everythin
 
 ### Future Direction
 1. **Support for ARM-based Macs**: Watter currently only supports parsing the commandline from Intel Macs. A future release will provide support for ARM Macs as well, since ARM Macs have a slightly different `powermetrics` output style.
-2. **Security issue**: For ease of development, Watter requests the user for an admin password. It then uses the key command `echo "password" | sudo -S zsh -c powermetrics ...` which leaves a crucial security vulnerability. To mitigate this I could add the current process as a `sudoer` concealing the application, as `powermetrics` is usually not something to be worried about in terms of getting automatic `sudo` permission or not
-3. **Use without admin password**: Currently, Watter needs your admin password to function. I could add another binary that talks to the SMC without the need for an admin password or find another way. However, currently, `powermetrics` is the safest way to do everything. I could also store the admin password once in Keychain for ease of use, however I'm still exploring options as to how to do this.
-4. **Context-aware backgrounds**: In Swift, the OS decides what color to paint text/graphics depending on the wallpaper color, to increase contrast. So if the wallpaper is dark, the menubar text is going to be white. If the wallpaper is bright, the menubar text is going to be black. I have no way of doing this unless I enable screen record functions, and it's not even possible using JNA. On multiple displays, it also doesn't properly increase transparency as the display loses focus.
-5. **Proper quitting strategy**: The app doesn't cancel the process when quit. Looking for a solution when force quit as well. 
-6.  
+2. **Use without admin password**: Currently, Watter needs your admin password to function. I could add another binary that talks to the SMC without the need for an admin password or find another way. However, currently, `powermetrics` is the safest way to do everything. I could also store the admin password once in Keychain for ease of use, however I'm still exploring options as to how to do this.
+3. **Context-aware backgrounds**: It requests for screen recording permissions to adapt to contrast within the menubar's colors depending on wallpaper luminosity, because it doesn't rely on the OS's drawing techniques which handle this automatically. It also can't detect whether if the menubar has lost its focus and only adapts to the current focused display. Ideally, it can have separate colors for each display if necessary and decrease the transparency when a display has lost its focus. 
+4. **Proper quitting strategy**: The app doesn't cancel the process when quit. Looking for a solution when force quit as well. 
+
 
 ### Credits
 <div align="center">
