@@ -13,33 +13,31 @@ import java.util.concurrent.*;
 public class Menubar {
 
     public static String userPwd;
-    private static final SystemTray tray = SystemTray.getSystemTray();
     private static TrayIcon trayIcon;
     private static PopupMenu menu;
     private static MenuItem aboutItem;
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
     private static volatile ScheduledFuture<?> drawTask;
     private static Thread readerThread;
-    private static final Color color = new Color(255, 255, 255, 225);
+    private static Color color = new Color(255, 255, 255, 225);
     private static Font SFCompact;
+
+    private static Robot robot;
+    static {try {robot = new Robot();} catch (AWTException ignored){}}
 
     private static volatile String wattage = "- W";
     private static volatile String cpuFreq = "- GHz";
     private static volatile String gpuFreq = "- MHz";
     private static volatile String charge = "--:--";
 
-    private static volatile String selectedSource = "Wattage";
     private static final Map<String, CheckboxMenuItem> sourceMenuItems = new HashMap<>();
     private static final String[] sourceNames = {"Wattage", "CPU Freq", "GPU Freq", "Charge"};
+    private static volatile String selectedSource = sourceNames[0];
 
     static {
-        try {
-            SFCompact = Font.createFont(Font.TRUETYPE_FONT,
-                            Objects.requireNonNull(Menubar.class.getResourceAsStream("SFCompact.otf")))
-                            .deriveFont(Font.BOLD, 64f);
-        } catch (FontFormatException | IOException ignored) {}
+        try {SFCompact = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(Menubar.class.getResourceAsStream("SFCompact.otf"))).deriveFont(Font.BOLD, 64f);}
+        catch (FontFormatException | IOException ignored) {}
     }
-
 
     public static void main(String[] args) {
         System.setProperty("apple.awt.application.name", "Watter");
@@ -52,7 +50,7 @@ public class Menubar {
                     """
                         Please enter an administrator's password
                         in order to properly monitor performance.
-                        Your data will not be misused.
+                        Your information will never be misused.
                         """,
                     passwordField
             };
@@ -63,7 +61,7 @@ public class Menubar {
                 public void ancestorMoved(AncestorEvent event) {}
             });
 
-            int option = JOptionPane.showConfirmDialog(null, dialogContent, "Enter Password", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE);
+            int option = JOptionPane.showConfirmDialog(null, dialogContent, "Enter Password", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (option == JOptionPane.OK_OPTION) {
                 char[] password = passwordField.getPassword();
                 userPwd = new String(password);
@@ -74,11 +72,18 @@ public class Menubar {
         trayIcon = new TrayIcon(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
         trayIcon.setImageAutoSize(false);
         trayIcon.setPopupMenu(menu);
-        try {tray.add(trayIcon);}
+        try {SystemTray.getSystemTray().add(trayIcon);}
         catch (AWTException e) {throw new RuntimeException(e);}
         updateTray();
         startTask();
         monitorCharge();
+    }
+
+    private static void validateColor(){
+        Color c = robot.getPixelColor(0,0);
+        double brightness = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114);
+        if(brightness < 127) color = Color.WHITE;
+        else color = Color.BLACK;
     }
 
     private static void startTask() {
@@ -100,6 +105,7 @@ public class Menubar {
                         if (!newGpuFreq.equals(gpuFreq)) {gpuFreq = newGpuFreq; updated = true;}
                     }
                     if (updated) updateTray();
+                    validateColor();
                 }
             } catch (IOException ignored) {}
         });
@@ -109,8 +115,7 @@ public class Menubar {
     }
 
     private static void monitorCharge() {
-        Runnable chargeTask = Menubar::parseCharge;
-        scheduler.scheduleAtFixedRate(chargeTask, 0, 60, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(Menubar::parseCharge, 0, 60, TimeUnit.SECONDS);
     }
 
     private static void parseCharge() {
@@ -146,6 +151,7 @@ public class Menubar {
             tooltipText.append(sourceName).append(": ").append(getSource(sourceName));
             if (i < otherSources.size() - 1) tooltipText.append("\n");
         }
+
         trayIcon.setToolTip(tooltipText.toString());
 
         for (String sourceName : sourceNames) {
@@ -215,6 +221,14 @@ public class Menubar {
 
         menu.addSeparator();
 
+        MenuItem colorAware = new MenuItem("Enable Accessibility...");
+        colorAware.addActionListener(e -> {
+
+            JOptionPane.showConfirmDialog(null, "Enter Password", "d", JOptionPane.YES_NO_OPTION);
+        });
+
+        menu.addSeparator();
+
         aboutItem = new MenuItem("About Watter...");
         aboutItem.addActionListener(e -> showAbout());
 
@@ -223,6 +237,7 @@ public class Menubar {
         quit.addActionListener(e -> {
             if(drawTask != null) drawTask.cancel(false);
             scheduler.shutdownNow();
+            SMC.process.destroyForcibly();
             if (readerThread != null) readerThread.interrupt();
             System.exit(0);
         });

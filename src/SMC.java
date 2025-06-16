@@ -1,13 +1,14 @@
-
 import java.io.*;
 
 public class SMC {
+
+    public static Process process;
 
     public static InputStream send(String command) {
         try {
             ProcessBuilder builder = new ProcessBuilder("zsh", "-c", command);
             builder.redirectErrorStream(true);
-            Process process = builder.start();
+            process = builder.start();
             return process.getInputStream();
         } catch (IOException e) {throw new RuntimeException(e);}
     }
