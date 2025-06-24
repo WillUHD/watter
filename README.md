@@ -1,11 +1,13 @@
-<img align="left" width="441" height="128" src="https://github.com/user-attachments/assets/5591ce5a-767e-409d-9bb0-ee9e0c50492a" alt="Watter">
+<img align="left" width="128" height="128" src="https://github.com/user-attachments/assets/ced6fc7b-3fa8-400d-8365-2f21e9f9936e" alt="Watter">
 
-<div align="center">
+<div align="left">
 
 # Watter
 A simple utility for monitoring the current wattage, CPU, GPU, and charging status of your Mac. 
-
+ 
 <div align="left">
+
+#
 
 ### How it Works
 Watter uses the commandline function `powermetrics` to get information directly from the SMC controller of your Mac. It also uses `pmset` to get the charging estimations. 
