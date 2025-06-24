@@ -1,4 +1,4 @@
-![newwatt](https://github.com/user-attachments/assets/5591ce5a-767e-409d-9bb0-ee9e0c50492a)
+<img align="left" width="441" height="128" src="https://github.com/user-attachments/assets/5591ce5a-767e-409d-9bb0-ee9e0c50492a" alt="Watter">
 
 <div align="center">
 
@@ -38,7 +38,8 @@ I'm open to any suggestions on improving the app's codebase and making everythin
 1. **Support for ARM-based Macs**: Watter currently only supports parsing the commandline from Intel Macs. A future release will provide support for ARM Macs as well, since ARM Macs have a slightly different `powermetrics` output style.
 2. **Use without admin password**: Currently, Watter needs your admin password to function. I could add another binary that talks to the SMC without the need for an admin password or find another way. However, currently, `powermetrics` is the safest way to do everything. I could also store the admin password once in Keychain for ease of use, however I'm still exploring options as to how to do this.
 3. **Context-aware backgrounds**: It requests for screen recording permissions to adapt contrast within the menubar, depending on wallpaper luminosity. This is because it doesn't rely on the OS's drawing techniques (which handle this automatically). It also can't detect whether if the menubar has lost its focus and only adapts to the current focused display. Ideally, it can have separate colors for each display on different colors if necessary and decrease the transparency when a display has lost its focus. 
-4. **Proper quitting strategy**: Looking for a solution to close the process when force quit. 
+4. **Proper quitting strategy**: Looking for a solution to close the process when force quit.
+5. **Just use swift**: Java is too bad for UIs. Nearly 90% CPU time is spent updating the UI. Perhaps switch to Swift for the frontend? 
 
 
 ### Credits
